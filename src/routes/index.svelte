@@ -1,19 +1,27 @@
-<!-- https://youtu.be/AV04qN6frmE?t=500 -->
+<!-- Youtube Video:  https://www.youtube.com/watch?v=50s6IKO8028&list=PLm_Qt4aKpfKiGbdjaHdOpry6Neza0etxZ&index=3 -->
 <script>
 import { each } from "svelte/internal";
 
-    let toDos = [
-        { task: "Comer", isComplete: false, createdAt: "2021-09-21"},
-        { task: "Cagar", isComplete: true, createdAt: "2021-09-21"},
-        { task: "Morir", isComplete: false, createdAt: "2021-09-21"}, 
-    ];
+    let todos = [];
+    let task = "";
+    let item = "";
+
+    const addTodo = () => {
+        let todo =  { task: task, isComplete: false, createdAt: new Date()};
+        todos = [todo, ...todos];
+        task = "";
+    }
+
+$: console.log(item);
 </script>
 
+
+<input type="text" placeholder="Add Task" bind:value={task} />
+<button on:click={addTodo}>Add</button>
+
 <ol>
-    {#each toDos as todo}
-    <li class:complete={todo.isComplete}>
-        {todo.task}        
-    </li> 
+    {#each todos as item}
+        <li class:complete={item.isComplete}> {item.task} </li> 
     {/each}
 </ol>
 

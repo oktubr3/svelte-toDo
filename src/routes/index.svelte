@@ -20,6 +20,12 @@ import { each } from "svelte/internal";
         todos = todos.filter((todo) => todo != deleteItem);
     };
 
+    const keyIsPressed = (event) => {
+        if (event.key === "Enter"){
+            addTodo();
+        }
+    };
+
 $: console.table(todos);
 </script>
 

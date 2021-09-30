@@ -1,4 +1,4 @@
-<!-- Youtube Video:  https://www.youtube.com/watch?v=50s6IKO8028&list=PLm_Qt4aKpfKiGbdjaHdOpry6Neza0etxZ&index=3 -->
+<!-- Youtube Video:  https://www.youtube.com/watch?v=Npc_MOXZKjM&list=PLm_Qt4aKpfKiGbdjaHdOpry6Neza0etxZ&index=4 -->
 <script>
 import { each } from "svelte/internal";
 
@@ -10,9 +10,18 @@ import { each } from "svelte/internal";
         let todo =  { task: task, isComplete: false, createdAt: new Date()};
         todos = [todo, ...todos];
         task = "";
-    }
+    };
 
-$: console.log(item);
+    const markTodoAsComplete = (index) => {
+        todos[index].isComplete = !todos[index].isComplete;
+    };
+
+    const deleteTodo = (index) => {
+        let deleteItem = todos[index];
+        todos = todos.filter((item) => item != deleteItem);
+    };
+
+$: console.table(todos);
 </script>
 
 
@@ -20,8 +29,18 @@ $: console.log(item);
 <button on:click={addTodo}>Add</button>
 
 <ol>
-    {#each todos as item}
-        <li class:complete={item.isComplete}> {item.task} </li> 
+    {#each todos as item, index}
+        <li class:complete={item.isComplete}>
+            <span>
+                {item.task}
+            </span>
+            <span>
+                <button on:click={() => markTodoAsComplete(index)}>✔</button>
+                <button on:click={() => deleteTodo(index)}>X</button>
+            </span>
+        </li> 
+    {:else}
+        <p>No ToDos Found</p>
     {/each}
 </ol>
 

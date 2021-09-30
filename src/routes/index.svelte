@@ -4,7 +4,6 @@ import { each } from "svelte/internal";
 
     let todos = [];
     let task = "";
-    let item = "";
 
     const addTodo = () => {
         let todo =  { task: task, isComplete: false, createdAt: new Date()};
@@ -18,7 +17,7 @@ import { each } from "svelte/internal";
 
     const deleteTodo = (index) => {
         let deleteItem = todos[index];
-        todos = todos.filter((item) => item != deleteItem);
+        todos = todos.filter((todo) => todo != deleteItem);
     };
 
 $: console.table(todos);
@@ -29,10 +28,10 @@ $: console.table(todos);
 <button on:click={addTodo}>Add</button>
 
 <ol>
-    {#each todos as item, index}
-        <li class:complete={item.isComplete}>
+    {#each todos as todo, index}
+        <li class:complete={todo.isComplete}>
             <span>
-                {item.task}
+                {todo.task}
             </span>
             <span>
                 <button on:click={() => markTodoAsComplete(index)}>✔</button>

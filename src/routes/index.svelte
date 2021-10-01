@@ -1,7 +1,7 @@
 <!-- Youtube Video:  https://www.youtube.com/watch?v=_TTlatg865k&list=PLm_Qt4aKpfKiGbdjaHdOpry6Neza0etxZ&index=6 -->
 <script>
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
+import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, addDoc } from 'firebase/firestore'
 import { firebaseConfig } from "$lib/firebaseConfig";
 import { browser } from "$app/env";
 
@@ -21,16 +21,16 @@ const unsubscribe = browser && onSnapshot(colRef, (querySnapshot) => {
   todos = fbTodos;
 });
 
-console.log( app, db)
-
 let task = "";
 let error = "";
 
-const addTodo = () => {
-    let todo =  { task: task, isComplete: false, createdAt: new Date()};
-    
+const addTodo = async () => {
     if (task != "") {
-        todos = [todo, ...todos];
+        const docRef = await addDoc(collection(db, "todos"), {
+            task: task, 
+            isComplete: false, 
+            createdAt: new Date()
+        });
         task = "";
         error = "";
     } else {
@@ -38,13 +38,17 @@ const addTodo = () => {
     }
 };
 
-const markTodoAsComplete = (index) => {
-    todos[index].isComplete = !todos[index].isComplete;
+const markTodoAsComplete = async (todo) => {
+    // todos[index].isComplete = !todos[index].isComplete;
+    await updateDoc(doc(db, "todos", todo.id), {
+        isComplete : !todo.isComplete
+    });
 };
 
-const deleteTodo = (index) => {
-    let deleteItem = todos[index];
-    todos = todos.filter((todo) => todo != deleteItem);
+const deleteTodo = async (todo) => {
+    // let deleteItem = todos[index];
+    // todos = todos.filter((todo) => todo != deleteItem);
+    await deleteDoc(doc(db, "todos", todo.id));
 };
 
 const keyIsPressed = (event) => {
@@ -52,8 +56,6 @@ const keyIsPressed = (event) => {
         addTodo();
     }
 };
-
-$: console.table(todos);
 </script>
 
 
@@ -61,14 +63,14 @@ $: console.table(todos);
 <button on:click={addTodo}>Add</button>
 
 <ol>
-    {#each todos as todo, index}
-        <li class:complete={todo.isComplete}>
-            <span>
+    {#each todos as todo}
+        <li>
+            <span class:complete={todo.isComplete}>
                 {todo.task}
             </span>
             <span>
-                <button on:click={() => markTodoAsComplete(index)}>✔</button>
-                <button on:click={() => deleteTodo(index)}>X</button>
+                <button on:click={() => markTodoAsComplete(todo)}>✔</button>
+                <button on:click={() => deleteTodo(todo)}>X</button>
             </span>
         </li> 
     {:else}

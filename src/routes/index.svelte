@@ -1,16 +1,28 @@
-<!-- Youtube Video:  https://youtu.be/G3DRgWzlAjg?list=PLm_Qt4aKpfKiGbdjaHdOpry6Neza0etxZ&t=716 -->
+<!-- Youtube Video:  https://www.youtube.com/watch?v=_TTlatg865k&list=PLm_Qt4aKpfKiGbdjaHdOpry6Neza0etxZ&index=6 -->
 <script>
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore'
 import { firebaseConfig } from "$lib/firebaseConfig";
 import { browser } from "$app/env";
 
 const app = browser && (getApps().length === 0 ? initializeApp(firebaseConfig) : getApp());
 const db = browser && getFirestore();
 
-console.log( app, db)
+const colRef = browser && collection(db, "todos");
 
 let todos = [];
+
+const unsubscribe = browser && onSnapshot(colRef, (querySnapshot) => {
+  let fbTodos = [];
+  querySnapshot.forEach((doc) => {
+      let todo = {...doc.data(), id: doc.id};
+      fbTodos = [todo, ...fbTodos];
+  });
+  todos = fbTodos;
+});
+
+console.log( app, db)
+
 let task = "";
 let error = "";
 
